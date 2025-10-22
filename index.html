@@ -806,18 +806,82 @@
 
         <main class="main">
             <!-- HOME -->
-            <section id="home" class="section active" style="background-image: url('images/fon.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; position: relative;">
+           <!-- Главная секция с исправленным фоном -->
+<section id="home" class="section active" style="position: relative;">
+    <!-- Затемняющий overlay -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 0;"></div>
+    
+    <!-- Основной контент героя -->
     <div class="hero" style="position: relative; z-index: 1;">
-        <h1>AFilm</h1>
-        <p>Детективная История о Любительском Кино</p>
-        <div class="button-group">
-            <button class="btn-primary" onclick="switchSection('case')">Начать расследование</button>
-            <button class="btn-secondary" onclick="switchSection('db')">База знаний о камерах</button>
-            <button class="btn-secondary" onclick="switchSection('about')">О проекте</button>
+        <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; color: #F59E57; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); background: linear-gradient(135deg, #F59E57 0%, #FFB84D 50%, #F59E57 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            AFilm
+        </h1>
+        
+        <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #E8E3DA; max-width: 600px; margin-left: auto; margin-right: auto; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); line-height: 1.6;">
+            Детективная история о любительском кино
+        </p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="#actors" class="cta-button" style="background: linear-gradient(135deg, #F59E57 0%, #E8945A 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(245, 158, 87, 0.4); border: none; display: inline-block;">
+                Смотреть трейлер
+            </a>
+            <a href="#story" class="cta-button-secondary" style="background: transparent; color: #E8E3DA; padding: 12px 30px; border: 2px solid #F59E57; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; display: inline-block;">
+                Узнать больше
+            </a>
         </div>
     </div>
 </section>
+
+<!-- Обновленные стили -->
+<style>
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* ГЛАВНОЕ: фон теперь здесь с правильным порядком слоёв */
+    background:
+        url('images/fon.jpg') center/cover no-repeat;
+    background-attachment: fixed;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 87, 0.6) !important;
+}
+
+.cta-button-secondary:hover {
+    background: rgba(245, 158, 87, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 87, 0.3);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero {
+        padding: 2rem 1rem;
+        background-attachment: scroll; /* На мобильных убираем fixed */
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .hero p {
+        font-size: 1.1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cta-button, .cta-button-secondary {
+        padding: 10px 25px !important;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
             <!-- CASE -->
             <section id="case" class="section">
                 <div class="case-container">
