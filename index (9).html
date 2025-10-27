@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFilm — Детективная История о любительском кино</title>
+    <style>
+        :root {
+            --bg: #1C1B1A;
+            --panel: #242321;
+            --card: #2A2927;
+            --muted: #A8A29E;
+            --text: #ECEAE7;
+            --accent: #F59E57;
+            --accent-press: #D8843F;
+            --stroke: #3A3936;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        /* Layout */
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--panel) 0%, var(--card) 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--stroke);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--stroke);
+            color: var(--accent);
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+            background-color: rgba(245, 158, 87, 0.1);
+        }
+
+        .main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: 
+                linear-gradient(135deg, rgba(28, 27, 26, 0.7) 0%, rgba(36, 35, 33, 0.7) 100%),
+                linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%),
+                radial-gradient(ellipse at center, rgba(245, 158, 87, 0.1) 0%, transparent 70%);
+            background-color: #1C1B1A;
+            background-image: 
+                url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwwDAwwGEAwMGBAwHBgcFBcYHBcGFBcYIBwcICsJCAgKCAkLDA0ODA0HDA0ODw0P/2wBDAQICAgMDAwYDAwYMCAcIDAwYDAwwDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwP/wAARCADIAZADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWm5ybnJ2eoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba2uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q=='),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900"><defs><filter id="glow"><feGaussianBlur stdDeviation="4"/></filter></defs><rect width="1600" height="900" fill="%231C1B1A"/><g opacity="0.3"><rect x="100" y="150" width="120" height="600" fill="%232A2927"/><rect x="300" y="200" width="100" height="550" fill="%232A2927"/><rect x="500" y="100" width="110" height="600" fill="%232A2927"/><circle cx="1150" cy="250" r="60" fill="%23242321" stroke="%23F59E57" stroke-width="2"/><line x1="50" y1="750" x2="1550" y2="750" stroke="%233A3936" stroke-width="3"/></g><g opacity="0.2" filter="url(%23glow)"><ellipse cx="300" cy="350" rx="400" ry="300" fill="%23F59E57"/><ellipse cx="1200" cy="400" rx="350" ry="250" fill="%23F59E57"/></g></svg>');
+            background-size: cover, cover, cover;
+            background-position: center, center, center;
+            background-attachment: fixed;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 25% 35%, rgba(245, 158, 87, 0.2) 0%, transparent 45%),
+                radial-gradient(circle at 75% 65%, rgba(245, 158, 87, 0.12) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            font-size: 28px;
+            color: var(--muted);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Buttons */
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-press);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(245, 158, 87, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--card);
+            color: var(--text);
+            border: 1px solid var(--stroke);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--panel);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 14px;
+        }
+
+        /* Case Investigation */
+        .case-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+        }
+
+        .case-main {
+            flex: 1;
+        }
+
+        .case-panel {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .case-panel h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .case-panel-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .case-panel-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .evidence-list, .character-list, .timeline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .badge {
+            background-color: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 12px;
+            color: var(--muted);
+            display: inline-block;
+        }
+
+        .badge.unlocked {
+            background-color: rgba(245, 158, 87, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .scene-container {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scene-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .scene-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            font-size: 12px;
+            color: var(--muted);
+            background-color: var(--panel);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        .scene-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .scene-text {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .media-placeholder {
+            background: linear-gradient(135deg, var(--panel) 0%, var(--stroke) 100%);
+            border: 1px dashed var(--stroke);
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-direction: column;
+            gap: 1rem;
+            color: var(--muted);
+            font-size: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .media-placeholder video,
+        .media-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-icon {
+            font-size: 32px;
+            opacity: 0.5;
+        }
+
+        .pixi-box {
+            background: linear-gradient(135deg, rgba(245, 158, 87, 0.1) 0%, rgba(245, 158, 87, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 87, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .pixi-label {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .pixi-text {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .choice-btn {
+            text-align: left;
+            padding: 1rem;
+            background-color: var(--panel);
+            border: 1px solid var(--stroke);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--card);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Navigation buttons */
+        .scene-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Camera Database */
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            background-color: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .search-box::placeholder {
+            color: var(--muted);
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1rem;
+            background-color: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 20px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-pill.active {
+            background-color: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .filter-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .camera-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .camera-card {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .camera-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(245, 158, 87, 0.2);
+        }
+
+        .camera-image {
+            background: linear-gradient(135deg, var(--panel) 0%, var(--stroke) 100%);
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: var(--accent);
+            overflow: hidden;
+        }
+
+        .camera-info {
+            padding: 1.5rem;
+        }
+
+        .camera-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .camera-maker {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .camera-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .camera-tag {
+            background-color: var(--panel);
+            border: 1px solid var(--stroke);
+            color: var(--text);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .camera-specs {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .camera-card button {
+            width: 100%;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .modal-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, var(--card) 0%, var(--stroke) 100%);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            color: var(--accent);
+            overflow: hidden;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-body {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-specs {
+            background-color: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+        }
+
+        .spec-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--stroke);
+        }
+
+        .spec-line:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .spec-value {
+            color: var(--accent);
+        }
+
+        /* Mini-game */
+        .minigame-container {
+            max-width: 800px;
+        }
+
+        .minigame-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .slot {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .slot-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .slot-preview {
+            background: linear-gradient(135deg, var(--panel) 0%, var(--stroke) 100%);
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 24px;
+        }
+
+        .slot-select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .minigame-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .minigame-buttons button {
+            flex: 1;
+        }
+
+        /* About */
+        .about-container {
+            max-width: 800px;
+        }
+
+        .about-section {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .about-section p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .about-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .team-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .team-member {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .team-member-name {
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .team-member-role {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero p {
+                font-size: 20px;
+            }
+
+            .case-container {
+                grid-template-columns: 1fr;
+            }
+
+            .case-panel {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+
+            .camera-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <a class="logo" onclick="goToHome()">AFilm</a>
+            <nav class="nav">
+                <button class="nav-btn active" data-section="home" onclick="switchSection('home')">Главная</button>
+                <button class="nav-btn" data-section="case" onclick="switchSection('case')">Расследование</button>
+                <button class="nav-btn" data-section="db" onclick="switchSection('db')">База камер</button>
+                <button class="nav-btn" data-section="about" onclick="switchSection('about')">О проекте</button>
+            </nav>
+        </header>
+
+        <main class="main">
+            <!-- HOME -->
+           <!-- Главная секция с исправленным фоном -->
+<section id="home" class="section active" style="position: relative;">
+    <!-- Затемняющий overlay -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 0;"></div>
+    
+    <!-- Основной контент героя -->
+    <div class="hero" style="position: relative; z-index: 1;">
+        <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; color: #F59E57; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); background: linear-gradient(135deg, #F59E57 0%, #FFB84D 50%, #F59E57 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            AFilm
+        </h1>
+        
+        <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #E8E3DA; max-width: 600px; margin-left: auto; margin-right: auto; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); line-height: 1.6;">
+            Детективная история о любительском кино
+        </p>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button onclick="openTrailerModal()" class="cta-button" style="background: linear-gradient(135deg, #F59E57 0%, #E8945A 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(245, 158, 87, 0.4); border: none; display: inline-block; cursor: pointer;">
+                Смотреть трейлер
+            </button>
+            <a href="docs/AFilm_Vision.pdf" target="_blank" class="cta-button-secondary" style="background: transparent; color: #E8E3DA; padding: 12px 30px; border: 2px solid #F59E57; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; display: inline-block;">
+                Узнать больше
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Обновленные стили -->
+<style>
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* ГЛАВНОЕ: фон теперь здесь с правильным порядком слоёв */
+    background:
+        url('images/fon.jpg') center/cover no-repeat;
+    background-attachment: fixed;
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 87, 0.6) !important;
+}
+
+.cta-button-secondary:hover {
+    background: rgba(245, 158, 87, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 87, 0.3);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero {
+        padding: 2rem 1rem;
+        background-attachment: scroll; /* На мобильных убираем fixed */
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .hero p {
+        font-size: 1.1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .cta-button, .cta-button-secondary {
+        padding: 10px 25px !important;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+            <!-- CASE -->
+            <section id="case" class="section">
+                <div class="case-container">
+                    <div class="case-main">
+                        <div id="scene-render"></div>
+                        <div class="scene-nav">
+                            <button class="btn-secondary btn-small" id="prev-btn" onclick="previousScene()" style="display:none;">← Назад</button>
+                            <button class="btn-secondary btn-small" id="next-btn" onclick="nextScene()" style="display:none;">Вперёд →</button>
+                            <button class="btn-primary" id="minigame-btn" onclick="switchSection('minigame')" style="display:none;">🎓 Получить сертификат детектива</button>
+                        </div>
+                    </div>
+
+                    <aside class="case-panel">
+                        <div class="case-panel-section">
+                            <h3>Улики</h3>
+                            <div id="evidence-panel" class="evidence-list"></div>
+                        </div>
+                        <div class="case-panel-section">
+                            <h3>Персонажи</h3>
+                            <div id="character-panel" class="character-list"></div>
+                        </div>
+                        <div class="case-panel-section">
+                            <h3>Камеры</h3>
+                            <div id="camera-panel" class="character-list"></div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- DATABASE -->
+            <section id="db" class="section">
+                <div class="camera-controls">
+                    <input type="text" class="search-box" id="search-input" placeholder="Поиск по названию или производителю..." onkeyup="filterCameras()">
+                </div>
+                <div class="filter-pills">
+                    <button class="filter-pill active" onclick="toggleFilter(this, 'all')">Все</button>
+                    <button class="filter-pill" onclick="toggleFilter(this, 'Ранняя цифровая')">Ранняя цифровая</button>
+                    <button class="filter-pill" onclick="toggleFilter(this, 'Карманная')">Карманная</button>
+                    <button class="filter-pill" onclick="toggleFilter(this, 'Полупрофессиональная')">Полупрофессиональная</button>
+                    <button class="filter-pill" onclick="toggleFilter(this, 'Профессиональная')">Профессиональная</button>
+                </div>
+                <div class="camera-grid" id="camera-grid"></div>
+            </section>
+
+            <!-- MINIGAME -->
+            <section id="minigame" class="section">
+                <h2 style="color: var(--accent); margin-bottom: 1rem;">Получи сертификат детектива</h2>
+                <p style="color: var(--muted); max-width: 700px; margin: 0 auto 2rem auto; text-align: center;">
+                    Ты раскрыл дело и научился читать язык камер. Теперь выбери камеры для трёх типовых сцен и получи свой персональный сертификат!
+                </p>
+                
+                <div class="minigame-container">
+                    <!-- Сцена 1 -->
+                    <div style="background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 2rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 style="color: var(--accent); margin: 0 0 0.5rem 0; font-size: 18px;">Сцена 1: Интервью с героем</h3>
+                                <p style="color: var(--muted); font-size: 14px; margin: 0 0 1rem 0; line-height: 1.6;">
+                                    Крупный план, важна эмоция и близость к персонажу. Камера статична, фокус на лице и речи.
+                                </p>
+                                <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+                                    <div style="margin-bottom: 0.3rem;">📹 <strong style="color: var(--accent);">TRV900</strong> — тёплые тона, винтажная атмосфера</div>
+                                    <div style="margin-bottom: 0.3rem;">🎬 <strong style="color: var(--accent);">DVX100</strong> — киношный 24p, драматизм</div>
+                                    <div>📱 <strong style="color: var(--accent);">GoPro</strong> — широкий угол, показать окружение</div>
+                                </div>
+                            </div>
+                            <div style="min-width: 200px;">
+                                <div class="slot-preview" id="preview-1" style="text-align: center; margin-bottom: 0.5rem; min-height: 120px;">
+                                    <div style="background: linear-gradient(135deg, rgba(245, 158, 87, 0.05) 0%, rgba(245, 158, 87, 0.02) 100%); border-radius: 12px; padding: 1rem; border: 1px dashed var(--accent); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <div style="font-size: 32px;">🎬</div>
+                                        <div style="font-size: 11px; font-style: italic; color: var(--muted); text-align: center; line-height: 1.4;">"Снимайте так, будто это ваш последний кадр"</div>
+                                    </div>
+                                </div>
+                                <select id="camera-1" class="slot-select" onchange="updatePreview(1)" style="width: 100%; padding: 0.75rem; background: var(--panel); border: 1px solid var(--stroke); border-radius: 8px; color: var(--text); font-size: 14px;">
+                                    <option value="">Выбери камеру...</option>
+                                    <option value="trv900">TRV900 (тёпло/винтаж)</option>
+                                    <option value="dvx100">DVX100 (24p/кино)</option>
+                                    <option value="gopro">GoPro (широкий угол)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сцена 2 -->
+                    <div style="background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 2rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 style="color: var(--accent); margin: 0 0 0.5rem 0; font-size: 18px;">Сцена 2: Погоня по городу</h3>
+                                <p style="color: var(--muted); font-size: 14px; margin: 0 0 1rem 0; line-height: 1.6;">
+                                    Динамичное движение, экшн. Камера должна передать скорость, адреналин и напряжение момента.
+                                </p>
+                                <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+                                    <div style="margin-bottom: 0.3rem;">📹 <strong style="color: var(--accent);">TRV900</strong> — мягкое дрожание, ручная съёмка</div>
+                                    <div style="margin-bottom: 0.3rem;">🎬 <strong style="color: var(--accent);">DVX100</strong> — кинематографичная погоня</div>
+                                    <div>📱 <strong style="color: var(--accent);">GoPro</strong> — максимальная динамика, POV</div>
+                                </div>
+                            </div>
+                            <div style="min-width: 200px;">
+                                <div class="slot-preview" id="preview-2" style="text-align: center; margin-bottom: 0.5rem; min-height: 120px;">
+                                    <div style="background: linear-gradient(135deg, rgba(245, 158, 87, 0.05) 0%, rgba(245, 158, 87, 0.02) 100%); border-radius: 12px; padding: 1rem; border: 1px dashed var(--accent); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <div style="font-size: 32px;">🎥</div>
+                                        <div style="font-size: 11px; font-style: italic; color: var(--muted); text-align: center; line-height: 1.4;">"Камера видит больше, чем глаза"</div>
+                                    </div>
+                                </div>
+                                <select id="camera-2" class="slot-select" onchange="updatePreview(2)" style="width: 100%; padding: 0.75rem; background: var(--panel); border: 1px solid var(--stroke); border-radius: 8px; color: var(--text); font-size: 14px;">
+                                    <option value="">Выбери камеру...</option>
+                                    <option value="trv900">TRV900 (тёпло/ручная)</option>
+                                    <option value="dvx100">DVX100 (24p/кино)</option>
+                                    <option value="gopro">GoPro (экшн/POV)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сцена 3 -->
+                    <div style="background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 2rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 style="color: var(--accent); margin: 0 0 0.5rem 0; font-size: 18px;">Сцена 3: Финальная встреча</h3>
+                                <p style="color: var(--muted); font-size: 14px; margin: 0 0 1rem 0; line-height: 1.6;">
+                                    Кульминация истории. Важна атмосфера, настроение и визуальная эмоция. Что почувствует зритель?
+                                </p>
+                                <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+                                    <div style="margin-bottom: 0.3rem;">📹 <strong style="color: var(--accent);">TRV900</strong> — тёплая ностальгическая атмосфера</div>
+                                    <div style="margin-bottom: 0.3rem;">🎬 <strong style="color: var(--accent);">DVX100</strong> — драматичное завершение</div>
+                                    <div>📱 <strong style="color: var(--accent);">GoPro</strong> — современный экспериментальный взгляд</div>
+                                </div>
+                            </div>
+                            <div style="min-width: 200px;">
+                                <div class="slot-preview" id="preview-3" style="text-align: center; margin-bottom: 0.5rem; min-height: 120px;">
+                                    <div style="background: linear-gradient(135deg, rgba(245, 158, 87, 0.05) 0%, rgba(245, 158, 87, 0.02) 100%); border-radius: 12px; padding: 1rem; border: 1px dashed var(--accent); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <div style="font-size: 32px;">🎞️</div>
+                                        <div style="font-size: 11px; font-style: italic; color: var(--muted); text-align: center; line-height: 1.4;">"Каждый кадр рассказывает историю"</div>
+                                    </div>
+                                </div>
+                                <select id="camera-3" class="slot-select" onchange="updatePreview(3)" style="width: 100%; padding: 0.75rem; background: var(--panel); border: 1px solid var(--stroke); border-radius: 8px; color: var(--text); font-size: 14px;">
+                                    <option value="">Выбери камеру...</option>
+                                    <option value="trv900">TRV900 (тёпло/ностальгия)</option>
+                                    <option value="dvx100">DVX100 (24p/драма)</option>
+                                    <option value="gopro">GoPro (современно)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="minigame-buttons">
+                        <button class="btn-primary" onclick="generateCertificate()">Получить сертификат</button>
+                        <button class="btn-secondary" onclick="switchSection('case')">Назад к расследованию</button>
+                    </div>
+
+                    <div id="poster-container" style="margin-top: 2rem; display: none;">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem; text-align: center;">🎓 Твой сертификат детектива</h3>
+                        <div id="poster-output"></div>
+                        <button class="btn-primary" style="margin-top: 1rem; width: 100%;" onclick="saveCertificate()">📥 Скачать сертификат</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABOUT -->
+            <section id="about" class="section">
+                <div class="about-container">
+                    <div class="about-section">
+                        <h2>О проекте</h2>
+                        <p><strong>AFilm</strong> — это интерактивная детективная игра, которая исследует «язык камер». Мы верим, что каждое устройство съёмки имеет свой визуальный почерк, который рассказывает историю технологии и времени.</p>
+                    </div>
+
+                    <div class="about-section">
+                        <h2>Концепция</h2>
+                        <p>Игра погружает вас в мир любительского кино, где каждая камера — это улика. От тёплых тонов ранней цифровой техники до резкого качества современных смартфонов, вы научитесь читать историю через визуальные характеристики записи.</p>
+                    </div>
+
+                    <!-- Team Photos -->
+                    <div class="about-section">
+                        <h2>За кадром</h2>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                            <div style="position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 12px 40px rgba(245, 158, 87, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 30px rgba(0, 0, 0, 0.3)';">
+                                <img src="team-photo-1.jpg" alt="Съёмка в студии" style="width: 100%; height: auto; display: block; filter: grayscale(100%) contrast(1.1);">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(28, 27, 26, 0.95) 0%, transparent 100%); padding: 1.5rem 1rem 1rem; color: #ECEAE7;">
+                                    <div style="font-size: 14px; font-weight: 700; color: #F59E57; margin-bottom: 0.25rem;">В процессе съёмки</div>
+                                    <div style="font-size: 12px; color: #A8A29E;">Каждый кадр — результат работы команды</div>
+                                </div>
+                            </div>
+                            
+                            <div style="position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 12px 40px rgba(245, 158, 87, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 30px rgba(0, 0, 0, 0.3)';">
+                                <img src="team-photo-2.jpg" alt="Обсуждение в студии" style="width: 100%; height: auto; display: block; filter: grayscale(100%) contrast(1.1);">
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(28, 27, 26, 0.95) 0%, transparent 100%); padding: 1.5rem 1rem 1rem; color: #ECEAE7;">
+                                    <div style="font-size: 14px; font-weight: 700; color: #F59E57; margin-bottom: 0.25rem;">Обсуждение идей</div>
+                                    <div style="font-size: 12px; color: #A8A29E;">Где рождаются истории</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h2>Команда</h2>
+                        <div class="team-list">
+                            <div class="team-member">
+                                <div class="team-member-name">Анастасия</div>
+                                <div class="team-member-role">Режиссёр</div>
+                            </div>
+                            <div class="team-member">
+                                <div class="team-member-name">Андрей</div>
+                                <div class="team-member-role">Продюсер</div>
+                            </div>
+                            <div class="team-member">
+                                <div class="team-member-name">Дима</div>
+                                <div class="team-member-role">Сценарист</div>
+                            </div>
+                            <div class="team-member">
+                                <div class="team-member-name">Лиза</div>
+                                <div class="team-member-role">Видеомонтаж</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h2>Благодарности</h2>
+                        <p>Спасибо всем, кто верит в силу кино и технологии. Спасибо тем, кто трудится в тени студий и монтажных. Спасибо камерам, которые сохраняют истории.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- TRAILER MODAL -->
+    <div id="trailerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, #1C1B1A 0%, #2A2927 100%); border-radius: 20px; padding: 3rem; max-width: 600px; width: 90%; position: relative; border: 3px solid #F59E57; box-shadow: 0 20px 60px rgba(245, 158, 87, 0.3);">
+            <button onclick="closeTrailerModal()" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #F59E57; font-size: 32px; cursor: pointer; line-height: 1; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">×</button>
+            
+            <div style="text-align: center;">
+                <!-- Аватар Пикси -->
+                <div style="width: 120px; height: 120px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #F59E57 0%, #E8945A 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 64px; box-shadow: 0 8px 30px rgba(245, 158, 87, 0.4);">
+                    🤖
+                </div>
+
+                <!-- Заголовок -->
+                <h2 style="color: #F59E57; font-size: 28px; margin-bottom: 1rem; font-weight: 700;">Привет! Я Пикси 👋</h2>
+                
+                <!-- Текст -->
+                <p style="color: #ECEAE7; font-size: 16px; line-height: 1.8; margin-bottom: 1.5rem;">
+                    Трейлер ещё в производстве — мы снимаем материал! 🎬
+                </p>
+
+                <div style="background: linear-gradient(135deg, rgba(245, 158, 87, 0.1) 0%, rgba(245, 158, 87, 0.05) 100%); border-radius: 12px; padding: 1.5rem; border-left: 4px solid #F59E57; margin-bottom: 1.5rem;">
+                    <p style="color: #A8A29E; font-size: 14px; line-height: 1.8; margin: 0;">
+                        <strong style="color: #F59E57; display: block; margin-bottom: 0.5rem;">А пока:</strong>
+                        • Начни расследование и раскрой дело<br>
+                        • Изучи камеры в базе знаний<br>
+                        • Получи сертификат детектива
+                    </p>
+                </div>
+
+                <!-- Цитата -->
+                <div style="font-style: italic; color: #A8A29E; font-size: 14px; margin-bottom: 1.5rem;">
+                    "Технологии сохраняют истории.<br>Люди создают искусство."
+                </div>
+
+                <!-- Кнопка -->
+                <button onclick="closeTrailerModal(); switchSection('case');" style="background: linear-gradient(135deg, #F59E57 0%, #E8945A 100%); color: white; padding: 14px 40px; border-radius: 50px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(245, 158, 87, 0.4);">
+                    Начать расследование 🔍
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== DATA ==========
+       const CAMERAS = [
+    {
+        id: "canon-vixia",
+        name: "Canon Vixia HF G10",
+        maker: "Canon",
+        year: 2011,
+        typeTag: "Профессиональная видеокамера",
+        resolution: "1920×1080 (Full HD)",
+        sensor: "1/3-дюймовая 3CMOS",
+        codec: "AVCHD",
+        signature: "Ручное управление, 10x зум, популярна среди документалистов",
+        story: "Профессиональная камера для любителей и небольших студий",
+        filterColor: "sepia(0.5) saturate(1.2)",
+        emoji: "🎥",
+        image: "images/Canon_ixiaHFG10.jpg"
+    },
+    {
+        id: "canon-xl1",
+        name: "Canon XL1",
+        maker: "Canon",
+        year: 1998,
+        typeTag: "Профессиональная камера",
+        resolution: "720×480 (SD, MiniDV)",
+        sensor: "3×CCD",
+        codec: "DV",
+        signature: "Легендарная трёхматричная камера конца 90-х",
+        story: "Использовалась для съёмки независимого кино",
+        filterColor: "sepia(0.4) saturate(1.2)",
+        emoji: "🎬",
+        image: "images/Canon_XL1.jpg"
+    },
+    {
+        id: "canon-5d",
+        name: "Canon EOS 5D Mark II",
+        maker: "Canon",
+        year: 2008,
+        typeTag: "DSLR камера",
+        resolution: "1920×1080 (Full HD)",
+        sensor: "Full Frame 21.1 MP",
+        codec: "H.264",
+        signature: "Революция в видеографии — зеркалка с видео",
+        story: "Открыла эру DSLR-кино и малобюджетного независимого производства",
+        filterColor: "sepia(0.3) saturate(1.3)",
+        emoji: "📷",
+        image: "images/CanonEOS5DMarkII.jpg"
+    },
+    {
+        id: "gopro-hero3",
+        name: "GoPro Hero3",
+        maker: "GoPro",
+        year: 2012,
+        typeTag: "Экшн-камера",
+        resolution: "1920×1080 / 2.7K",
+        sensor: "1/2.3-дюймовая CMOS",
+        codec: "H.264",
+        signature: "Компактная экшн-камера для POV-съёмки",
+        story: "Изменила подход к съёмке экстремальных сцен",
+        filterColor: "saturate(1.5)",
+        emoji: "🏄",
+        image: "images/GoPro_Hero3.jpg"
+    },
+    {
+        id: "panasonic-dvx",
+        name: "Panasonic AG-DVX100",
+        maker: "Panasonic",
+        year: 2002,
+        typeTag: "Профессиональная камера",
+        resolution: "720×480 (SD, MiniDV)",
+        sensor: "3×CCD",
+        codec: "DV",
+        signature: "Первая доступная камера с 24p — кинематографическая частота",
+        story: "Выбор независимых режиссёров начала 2000-х",
+        filterColor: "sepia(0.5) saturate(1.1)",
+        emoji: "🎞️",
+        image: "images/Panasonic_AG_DVX100.jpg"
+    },
+    {
+        id: "sony-hc1",
+        name: "Sony DCR-HC1",
+        maker: "Sony",
+        year: 2004,
+        typeTag: "HDV камера",
+        resolution: "1440×1080 (HDV)",
+        sensor: "1/3-дюймовая CMOS",
+        codec: "HDV (MPEG-2)",
+        signature: "Одна из первых потребительских HD-камер",
+        story: "Сделала HD-съёмку доступной для любителей",
+        filterColor: "sepia(0.4) saturate(1.2)",
+        emoji: "📹",
+        image: "images/Sony_DCR_HC1.jpg"
+    },
+    {
+        id: "sony-trv900",
+        name: "Sony DCR-TRV900",
+        maker: "Sony",
+        year: 1998,
+        typeTag: "Ранняя цифровая",
+        resolution: "720×480 (SD, MiniDV)",
+        sensor: "3×CCD",
+        codec: "DV",
+        signature: "Тёплая мягкая картинка, ностальгическая палитра",
+        story: "Первая потребительская 3CCD с мягкой цветопередачей; идеальна для документирования моментов с уютной, винтажной эстетикой",
+        filterColor: "sepia(0.4) saturate(1.2)",
+        emoji: "📼",
+        image: "images/Sony_DCR_TRV900.jpg"
+    },
+    {
+        id: "sony-sr85",
+        name: "Sony Handycam DCR-SR85",
+        maker: "Sony",
+        year: 2008,
+        typeTag: "HDD Camcorder",
+        resolution: "1920×1080 (Full HD)",
+        sensor: "1/5.8-дюймовая CMOS",
+        codec: "MPEG-4 AVC/H.264",
+        signature: "Камера со встроенным жёстким диском на 80 ГБ",
+        story: "Удобна для длительных съёмок без смены носителя",
+        filterColor: "saturate(1.1)",
+        emoji: "💾",
+        image: "images/Sony_Handycam_DCR_SR85.jpg"
+    }
+];
+
+        const STORY = {
+            acts: [
+                {
+                    id: "act0",
+                    title: "Пролог",
+                    scenes: [
+                        {
+                            id: "s_prologue",
+                            title: "Ночная студия",
+                            text: "Полумрак, кассеты разбросаны по столам, в углу слышны усталые голоса. На стене висят штативы и провода. Ночь. Утром детектив получит звонок: пропал второй режиссёр Олег Фокин. В студии найдена странная запись на старой кассете.",
+                            act: "Пролог",
+                            timecode: "00:00:12:10",
+                            camera: "TRV900",
+                            pixi: "Привет! Я Пикси, твой помощник. Я помогу тебе читать язык камер. Каждый видеоаппарат рассказывает историю. Начнём?",
+                            unlocks: ["ev_case_opened", "ev_meet_pixi"],
+                            choices: [
+                                { text: "Начать расследование", next: "s_meet_director" },
+                                { text: "Узнать о камерах", next: "s_prologue_learn" }
+                            ]
+                        },
+                        {
+                            id: "s_prologue_learn",
+                            title: "Немного о камерах",
+                            text: "Пикси объясняет: «Видишь ли, детектив, каждая камера — это машина восприятия. У неё есть сенсор, который видит мир по-своему. Одна камера видит тепло, другая — холод. Одна ловит свет быстро, другая — медленно. И это всё видно на видео!»",
+                            act: "Пролог",
+                            pixi: "Три типа сенсоров: CCD (старый, тёплый), CMOS (новый, четкий), и MiniDV кассета vs HDV vs AVCHD кодеки. Готов начать?",
+                            unlocks: ["ev_learn_cameras"],
+                            choices: [
+                                { text: "Готов!", next: "s_meet_director" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "act1",
+                    title: "Погружение",
+                    scenes: [
+                        {
+                            id: "s_meet_director",
+                            title: "Режиссёр и Пикси",
+                            text: "Режиссёр Елена встречает детектива в студии. Она показывает полки с камерами: «Вот видишь, мы используем камеры как персонажей. Каждая рассказывает свою эпоху. Sony TRV900 — это 90-е, винтажное тепло. Canon XL1 — документальная холодность. Panasonic DVX100 — революция кино!» Пикси добавляет: «Сенсоры помогают нам понять, как снимали.»",
+                            act: "Акт I",
+                            pixi: "3CCD и 1CCD — разница видна! 3CCD значит три сенсора для RGB. Это даёт богатые цвета. 1CCD — бюджетный вариант, но честный.",
+                            camera: "xl1",
+                            unlocks: ["ev_meet_director"],
+                            camerasMentioned: ["trv900", "xl1", "dvx100"],
+                            choices: [
+                                { text: "Спросить о пропаже", next: "s_missing_person" },
+                                { text: "Перейти к базе камер 📹", next: "s_camera_database_info" }
+                            ]
+                        },
+                        {
+                            id: "s_camera_database_info",
+                            title: "База знаний о камерах",
+                            text: "Пикси предлагает изучить базу камер студии. «В верхнем меню есть раздел 'База камер' — там подробная информация о каждой модели: технические характеристики, история, примеры использования. Это поможет тебе лучше понимать визуальный язык каждой камеры». Детектив может вернуться к расследованию или перейти к изучению камер.",
+                            act: "Акт I",
+                            pixi: "Камеры — это не просто устройства. Каждая имеет свой характер, свой почерк. Изучи их, и ты сможешь читать визуальные улики!",
+                            unlocks: ["ev_database_discovered"],
+                            choices: [
+                                { text: "📚 Открыть базу камер", next: null, action: "openCameraDatabase" },
+                                { text: "Продолжить расследование", next: "s_missing_person" }
+                            ]
+                        },
+                        {
+                            id: "s_missing_person",
+                            title: "О пропаже",
+                            text: "«Олег исчез три дня назад,» — говорит Елена. «В последний раз его видели вечером на монтажной. Он работал с какой-то кассетой от старой Sony. На ней запись, которая нас очень встревожила.» Детектив берёт кассету. На ней пометка: «Кассета #7, 00:12–00:45.»",
+                            act: "Акт I",
+                            pixi: "DV кассета! Это MiniDV формат. Датчик времени показывает время записи. Странно, что именно эта кассета?",
+                            camera: "trv900",
+                            unlocks: ["ev_mysterious_tape"],
+                            choices: [
+                                { text: "Посмотреть кассету", next: "s_tape_watching" },
+                                { text: "Допросить ассистентов", next: "s_interview_assistants" }
+                            ]
+                        },
+                        {
+                            id: "s_tape_watching",
+                            title: "Просмотр кассеты",
+                            text: "На экране мониьтора разворачивается картина: студия, огни, режиссёр объясняет что-то актёрам. Но картинка дёргается, качество низкое — явно старая камера. В углу кадра видна тень — кто-то спорит с продюсером. Голоса не разборчивы, но атмосфера напряжённая.",
+                            video: "assets/footage.mp4",
+                            act: "Акт I",
+                            pixi: "Это TRV900! Видишь тёплые тона, мягкие переходы? 3CCD на обеспечивает. А дрожание — ручная съёмка. Режиссёр держит камеру?",
+                            camera: "trv900",
+                            unlocks: ["ev_tape_watched"],
+                            choices: [
+                                { text: "Осмотреть монтажную", next: "s_editing_room" },
+                                { text: "Поговорить о техники", next: "s_about_gear" }
+                            ]
+                        },
+                        {
+                            id: "s_interview_assistants",
+                            title: "Допрос ассистентов",
+                            text: "Два ассистента нервничают. «Олег был странным на последней неделе,» говорит первый. «Он всё время работал с видеоархивом, смотрел старые кассеты, искал что-то.» Второй добавляет: «Он говорил про 'язык камер'. Мол, если смотреть внимательно, можно понять, что происходило на самом деле.»",
+                            act: "Акт I",
+                            pixi: "Интересно! Язык камер — это мой язык! Каждая камера рассказывает истину через свой визуальный почерк.",
+                            unlocks: ["ev_assistants_interviewed"],
+                            choices: [
+                                { text: "Вернуться в студию", next: "s_studio_tour" },
+                                { text: "Проверить видеоархив", next: "s_video_archive" }
+                            ]
+                        },
+                        {
+                            id: "s_about_gear",
+                            title: "О технике",
+                            text: "Елена показывает полки: «DV кассеты работают 60 минут, запись идёт на магнитную ленту. HDV более плотный, записывает в MPEG2. AVCHD — это уже 'файловая' логика. Но суть одна: каждый формат имеет свой «звук» видео.» Пикси добавляет: «Rolling shutter, прогрессив, 24p — всё это оставляет отпечаток.»",
+                            act: "Акт I",
+                            pixi: "24p — это киношный стандарт! 25 кадров в секунду (Европа) vs 29.97 (Америка). DVX100 первой предложила это потребителям.",
+                            unlocks: ["ev_tech_explained"],
+                            choices: [
+                                { text: "Осмотреть кассеты", next: "s_tape_inventory" },
+                                { text: "Двигаться дальше", next: "s_editing_room" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "act2",
+                    title: "След через камеры",
+                    scenes: [
+                        {
+                            id: "s_editing_room",
+                            title: "Монтажная комната",
+                            text: "Большой стол, мониьторы, стопки кассет. На стене расписание: 'Понедельник — TRV900 сцены, Вторник — Canon XL1 сцены, Среда — DVX100 сцены.' На полу лежит записка с адресом и временем: '19:00, коридор 3.'",
+                            act: "Акт II",
+                            pixi: "Ха! Расписание по камерам. Это необычно. Режиссёр намеренно разделила сцены по типам камер. Почему?",
+                            unlocks: ["ev_schedule_found"],
+                            choices: [
+                                { text: "Пойти по адресу из записки", next: "s_corridor_investigation" },
+                                { text: "Спросить режиссёра", next: "s_ask_director" }
+                            ]
+                        },
+                        {
+                            id: "s_corridor_investigation",
+                            title: "Коридор и наблюдение",
+                            text: "Детектив идёт в коридор 3. На стене видеокамера видеонаблюдения. На полу кабель. Кажется, кто-то пытался разобраться с камерой. На стене отметка: '19:00 Олег входит, 19:15 Олег выходит — ДРУГОЙ.'",
+                            act: "Акт II",
+                            pixi: "Стоп! На видеонаблюдении, вероятно, запись с дешёвой цифровой камеры. Плохое качество, но это даст нам подсказку.",
+                            camera: "gopro",
+                            unlocks: ["ev_corridor_evidence"],
+                            choices: [
+                                { text: "Проверить видео с камер видеонаблюдения", next: "s_cctv_footage" },
+                                { text: "Расспросить охранника", next: "s_guard_interview" }
+                            ]
+                        },
+                        {
+                            id: "s_cctv_footage",
+                            title: "Видео с видеонаблюдения",
+                            text: "Охранник показывает видео. Разрешение низкое, движение дёргается (rolling shutter в дешёвых камерах). В 19:00 входит человек, похожий на Олега. В 19:15 выходит похожий человек, но что-то не так. Он выше? Или это просто угол камеры?",
+                            act: "Акт II",
+                            pixi: "Rolling shutter! Это артефакт CMOS сенсоров. Дешёвые камеры сканируют кадр построчно, не одновременно. Может скрывать или выявлять детали.",
+                            camera: "hc1",
+                            unlocks: ["ev_cctv_watched"],
+                            choices: [
+                                { text: "Попросить экспертизу видео", next: "s_video_expertise" },
+                                { text: "Посмотреть другие записи", next: "s_other_cameras" }
+                            ]
+                        },
+                        {
+                            id: "s_ask_director",
+                            title: "Разговор с режиссёром",
+                            text: "«Расписание?» Елена смотрит на записку. «Да, я намеренно разделила сцены. Каждая камера имеет свой 'почерк'. Я хотела, чтобы зрители видели эволюцию технологии. От TRV900 к Canon к DVX100 и дальше. Это исследование языка кино через камеры.» Она улыбается грустно. «Олег это понял раньше всех. Может, слишком хорошо.»",
+                            act: "Акт II",
+                            pixi: "Интересно! Это не просто фильм. Это метаповествование о самой природе видеозаписи.",
+                            unlocks: ["ev_director_confession"],
+                            choices: [
+                                { text: "Спросить о деньгах и стрессе", next: "s_about_pressure" },
+                                { text: "Вернуться к доказательствам", next: "s_editing_room" }
+                            ]
+                        },
+                        {
+                            id: "s_video_expertise",
+                            title: "Видеоэксперт",
+                            text: "Видеоэксперт анализирует кадры: «Rolling shutter создаёт эффект 'желе'. На этом видео мы видим явный rolling shutter, характерный для мобильных камер или дешёвых цифровых устройств. Но есть что-то странное — в момент 19:15 появляется артефакт, как будто кадр был отредактирован.»",
+                            act: "Акт II",
+                            pixi: "Отредактирован? Значит, это не просто наблюдение. Кто-то манипулировал доказательствами!",
+                            unlocks: ["ev_footage_edited"],
+                            choices: [
+                                { text: "Расследовать монтаж", next: "s_investigate_editing" },
+                                { text: "Вернуться к режиссёру", next: "s_director_final" }
+                            ]
+                        },
+                        {
+                            id: "s_other_cameras",
+                            title: "Другие камеры видеонаблюдения",
+                            text: "В других местах студии есть ещё камеры видеонаблюдения. На одной из них видна сцена: Олег входит в кабинет режиссёра. На другой — Олег с коробкой, выходящий из хранилища. На третьей — уже другой человек, идущий с коробкой к выходу.",
+                            act: "Акт II",
+                            camera: "gopro",
+                            pixi: "Три разные камеры, три разные истории. Одна показывает вход, другая — выход с коробкой, третья — выход с коробкой, но ДРУГОГО человека.",
+                            unlocks: ["ev_multiple_footage"],
+                            choices: [
+                                { text: "Вскрыть коробку", next: "s_open_box" },
+                                { text: "Проверить личность второго человека", next: "s_identify_second_person" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "act3",
+                    title: "Разоблачение",
+                    scenes: [
+                        {
+                            id: "s_investigate_editing",
+                            title: "Расследование монтажа",
+                            text: "Детектив обращается в IT-отдел. Они проверяют логи. Видео было отредактировано в 23:47 тем же вечером. Автор — помощник режиссёра Максим. Он добавил переход и отредактировал часть кадра. Цель: скрыть что-то.",
+                            act: "Акт III",
+                            pixi: "Максим! Значит, он помогал инсценировать всё это. Но почему?",
+                            unlocks: ["ev_maxim_involved"],
+                            choices: [
+                                { text: "Допросить Максима", next: "s_interrogate_maxim" },
+                                { text: "Посмотреть исходный файл", next: "s_original_file" }
+                            ]
+                        },
+                        {
+                            id: "s_interrogate_maxim",
+                            title: "Допрос Максима",
+                            text: "Детектив находит Максима в монтажной. Он нервничает, но готов говорить. «Олег попросил меня отредактировать видео. Он хотел, чтобы казалось, будто пропал внезапно. На самом деле это был его план — привлечь внимание к условиям труда в студии. Я просто помог ему технически». Максим показывает переписку с Олегом, где тот просит о помощи.",
+                            act: "Акт III",
+                            pixi: "Так вот в чём дело! Это была спланированная акция. Максим просто помощник.",
+                            unlocks: ["ev_maxim_explanation"],
+                            choices: [
+                                { text: "Посмотреть исходный файл", next: "s_original_file" },
+                                { text: "Назад к расследованию", next: "s_investigate_editing" }
+                            ]
+                        },
+                        {
+                            id: "s_original_file",
+                            title: "Исходный файл",
+                            text: "Максим открывает оригинальную запись. На ней видно полную сцену: Олег спокойно собирает вещи, оглядывается на камеру (TRV900), улыбается и кивает. Затем выключает свет и уходит через заднюю дверь. Никакого насилия, никакой паники. Это был осознанный уход. В углу экрана — таймкод: 19:42, на два часа раньше чем в отредактированной версии.",
+                            act: "Акт III",
+                            pixi: "Олег контролировал всё. Он знал, что делает. Камера зафиксировала правду — нужно было только найти оригинал.",
+                            unlocks: ["ev_original_footage"],
+                            choices: [
+                                { text: "Поговорить с режиссёром", next: "s_director_final" },
+                                { text: "Назад к расследованию", next: "s_investigate_editing" }
+                            ]
+                        },
+                        {
+                            id: "s_open_box",
+                            title: "Коробка с реквизитом",
+                            text: "Коробка содержит: старые кассеты, фото сцен, записную книжку с адресами и номерами телефонов, и... написанное от руки письмо. 'Режиссёру Елене: Я ухожу. Работа выматывает. 12 часов в день за 15 тысяч в месяц. Новое правило: 2 дня в неделю, дедлайн, минимум деньги. Я устал. — Олег'",
+                            act: "Акт III",
+                            pixi: "Не исчезновение! Это протест. Он ушёл сам.",
+                            unlocks: ["ev_letter_found"],
+                            choices: [
+                                { text: "Поговорить с режиссёром", next: "s_director_final" },
+                                { text: "Найти Олега", next: "s_find_oleg" }
+                            ]
+                        },
+                        {
+                            id: "s_director_final",
+                            title: "Финальная беседа с режиссёром",
+                            text: "Елена сидит в студии среди кассет. «Да, это была инсценировка,» признаётся она. «Олег хотел уйти, но я попросила его помочь мне создать историю, которая покажет нарушения. Давление на съёмочной площадке, переработки, низкие зарплаты. Мы использовали 'язык камер' как метафору для раскрытия правды. Каждая камера показала фрагмент картины: TRV900 — тёплые человеческие отношения, которые были разрушены; Canon XL1 — холодная документальность фактов; DVX100 — киношная романтика проекта.»",
+                            act: "Акт III",
+                            pixi: "Это искусство! Они использовали природу видеозаписи как инструмент правды.",
+                            unlocks: ["ev_truth_revealed"],
+                            choices: [
+                                { text: "Собрать команду", next: "s_final_meeting" }
+                            ]
+                        },
+                        {
+                            id: "s_final_meeting",
+                            title: "Собрание команды",
+                            text: "Вся команда собирается в студии. Режиссёр объявляет новые правила: «2 дня в неделю, жёсткие дедлайны, минимальные выплаты в 20 тысяч. Никакого выгорания. Никакого давления.» Олег кивает. «И мы продолжим снимать. Но с уважением к людям.» Пикси добавляет: «Камеры не лгут. Они просто записывают то, что видят. Люди, которые стоят за ними, — вот кто решает правду.»",
+                            act: "Акт III",
+                            pixi: "Это конец расследования, но начало перемен.",
+                            unlocks: ["ev_new_rules"],
+                            choices: [
+                                { text: "Перейти к эпилогу", next: "s_epilogue" }
+                            ]
+                        },
+                        {
+                            id: "s_identify_second_person",
+                            title: "Личность второго человека",
+                            text: "Экспертиза показывает: второй человек — это сам Олег. Но одежда другая, волосы скрыты. На видео видно, что он переодевался в хранилище. Это был продуманный уход.",
+                            act: "Акт III",
+                            pixi: "Олег инсценировал собственное исчезновение! Это не преступление, это протест.",
+                            unlocks: ["ev_oleg_staged"],
+                            choices: [
+                                { text: "Найти Олега", next: "s_find_oleg" }
+                            ]
+                        },
+                        {
+                            id: "s_find_oleg",
+                            title: "Поиск Олега",
+                            text: "По адресам из записной книжки детектив находит Олега в небольшой квартире. Он спокоен. «Я не хотел этого. Но Елена предложила. Мы решили показать, как выглядит эксплуатация. И что можно сделать.» Он показывает документ: «Новое соглашение. Подписано всеми.»",
+                            act: "Акт III",
+                            pixi: "Справедливость не всегда выглядит как полиция. Иногда это просто люди, которые встают и говорят 'достаточно'.",
+                            unlocks: ["ev_oleg_found"],
+                            choices: [
+                                { text: "Завершить расследование", next: "s_epilogue" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "act4",
+                    title: "Эпилог",
+                    scenes: [
+                        {
+                            id: "s_epilogue",
+                            title: "Перезапуск",
+                            text: "Месяц спустя. Студия работает по новой схеме. Люди меньше переживают, но больше создают. На стене висит плакат: 'AFilm: Технологии сохраняют истории. Люди создают искусство.' Пикси шутит: 'Знаешь, детектив, раньше я думала, что камеры важнее людей. Теперь я знаю — камеры просто инструменты. Истории создают люди. И истории, которые нужно рассказывать, — это истории справедливости.'",
+                            act: "Эпилог",
+                            pixi: "Спасибо, что помог нам раскрыть правду. Теперь иди и смотри видео внимательнее. Каждый кадр рассказывает историю. Не забудь получить свой сертификат детектива!",
+                            unlocks: ["ev_game_complete"],
+                            choices: [
+                                { text: "Получить сертификат детектива 🎓", next: null }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // ========== STATE ==========
+        let currentScene = 0;
+        let allScenes = [];
+        let unlockedEvidences = new Set();
+        let currentFilter = "all";
+        let selectedCameras = {};
+
+        // Flatten scenes
+        function flattenScenes() {
+            allScenes = [];
+            STORY.acts.forEach(act => {
+                act.scenes.forEach(scene => allScenes.push(scene));
+            });
+        }
+
+        // ========== UI FUNCTIONS ==========
+        function switchSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+            if (sectionId === 'db') renderCameraDatabase();
+            if (sectionId === 'case') renderScene();
+            window.scrollTo(0, 0);
+        }
+
+        function goToHome() {
+            switchSection('home');
+        }
+
+        // ========== CASE SECTION ==========
+        function renderScene() {
+            if (allScenes.length === 0) flattenScenes();
+            const scene = allScenes[currentScene];
+            if (!scene) return;
+
+            // Unlock evidences
+            if (scene.unlocks) {
+                scene.unlocks.forEach(e => unlockedEvidences.add(e));
+            }
+
+            let html = `<div class="scene-container">`;
+            html += `<div class="scene-header">`;
+            html += `<div><div class="scene-title">${scene.title}</div>`;
+            html += `<div class="scene-meta">`;
+            html += `<span class="meta-badge">${scene.act}</span>`;
+            if (scene.camera) {
+                const cam = CAMERAS.find(c => c.id === scene.camera);
+                if (cam) html += `<span class="meta-badge">🎥 ${cam.name}</span>`;
+            }
+            if (scene.timecode) html += `<span class="meta-badge">⏱ ${scene.timecode}</span>`;
+            html += `</div></div></div>`;
+
+            // Pixi box
+            if (scene.pixi) {
+                html += `<div class="pixi-box">
+                    <div class="pixi-label">💾 Пикси говорит</div>
+                    <div class="pixi-text">${scene.pixi}</div>
+                </div>`;
+            }
+
+            // === ВИДЕО ПОДДЕРЖКА ===
+            if (scene.video || scene.videoEmbed) {
+                html += `<div class="video-container" style="margin: 1.5rem 0; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">`;
+                
+                if (scene.video) {
+                    // Локальное видео
+                    html += `
+                        <video 
+                            controls 
+                            style="width:100%; display:block; border-radius: 12px; background: var(--bg);"
+                            preload="metadata"
+                        >
+                            <source src="${scene.video}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                        <div style="padding: 0.75rem; background: var(--panel); color: var(--muted); font-size: 13px; text-align: center;">
+                            💡 Обратите внимание на качество записи и особенности камеры
+                        </div>
+                    `;
+                } else if (scene.videoEmbed) {
+                    // YouTube/Vimeo
+                    html += `
+                        <iframe 
+                            width="100%" 
+                            height="450" 
+                            src="${scene.videoEmbed}" 
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            style="display:block; background: var(--bg);"
+                        ></iframe>
+                    `;
+                }
+                
+                html += `</div>`;
+            }
+
+            // Старый media блок (как резерв)
+            if (scene.media && !scene.video && !scene.videoEmbed) {
+                html += `<div class="media-placeholder">
+                    <div class="media-icon">📹</div>
+                    <div>${scene.media.type === 'video' ? 'Видеоклип' : 'Фото'}</div>
+                </div>`;
+            }
+
+            // Text
+            html += `<div class="scene-text">${scene.text}</div>`;
+
+            // Choices
+            if (scene.choices && scene.choices.length > 0) {
+                html += `<div class="choices">`;
+                scene.choices.forEach((choice, idx) => {
+                    if (choice.action === 'openCameraDatabase') {
+                        html += `<button class="choice-btn" onclick="switchSection('db')">${choice.text}</button>`;
+                    } else {
+                        html += `<button class="choice-btn" onclick="goToScene('${choice.next}')">${choice.text}</button>`;
+                    }
+                });
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+            document.getElementById('scene-render').innerHTML = html;
+
+            // Update nav buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const miniBtn = document.getElementById('minigame-btn');
+
+            if (currentScene > 0) {
+                prevBtn.style.display = 'block';
+            } else {
+                prevBtn.style.display = 'none';
+            }
+
+            if (currentScene < allScenes.length - 1 && (!scene.choices || scene.choices.length === 0)) {
+                nextBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
+
+            if (currentScene === allScenes.length - 1) {
+                miniBtn.style.display = 'block';
+            } else {
+                miniBtn.style.display = 'none';
+            }
+
+            updateCasePanel();
+        }
+
+        function goToScene(sceneId) {
+            if (!sceneId) return;
+            const idx = allScenes.findIndex(s => s.id === sceneId);
+            if (idx !== -1) {
+                currentScene = idx;
+                renderScene();
+            }
+        }
+
+        function nextScene() {
+            if (currentScene < allScenes.length - 1) {
+                currentScene++;
+                renderScene();
+            }
+        }
+
+        function previousScene() {
+            if (currentScene > 0) {
+                currentScene--;
+                renderScene();
+            }
+        }
+
+        function updateCasePanel() {
+            const scene = allScenes[currentScene];
+
+            // Evidences
+            const evidenceHtml = Array.from(unlockedEvidences)
+                .map(e => {
+                    const label = {
+                        'ev_case_opened': '📌 Дело открыто',
+                        'ev_meet_pixi': '🤖 Знакомство с Пикси',
+                        'ev_learn_cameras': '📚 Типы сенсоров',
+                        'ev_meet_director': '👩‍🎬 Режиссёр Елена',
+                        'ev_database_discovered': '📖 База камер открыта',
+                        'ev_mysterious_tape': '📼 Странная кассета',
+                        'ev_tape_watched': '▶️ Кассета просмотрена',
+                        'ev_assistants_interviewed': '👥 Допрос ассистентов',
+                        'ev_tech_explained': '⚙️ Техника объяснена',
+                        'ev_schedule_found': '📅 Расписание найдено',
+                        'ev_corridor_evidence': '🚪 Коридор 3',
+                        'ev_cctv_watched': '🎥 Видеонаблюдение',
+                        'ev_director_confession': '💬 Признание',
+                        'ev_footage_edited': '✂️ Видео отредактировано',
+                        'ev_multiple_footage': '📹 Несколько камер',
+                        'ev_maxim_involved': '👤 Максим замешан',
+                        'ev_maxim_explanation': '💬 Объяснение Максима',
+                        'ev_original_footage': '🎞️ Исходный файл найден',
+                        'ev_letter_found': '💌 Письмо найдено',
+                        'ev_truth_revealed': '🔍 Правда раскрыта',
+                        'ev_new_rules': '✅ Новые правила',
+                        'ev_oleg_staged': '🎭 Олег инсценировал',
+                        'ev_oleg_found': '👁️ Олег найден',
+                        'ev_game_complete': '🏆 Игра завершена'
+                    }[e] || e;
+                    return `<div class="badge unlocked">${label}</div>`;
+                })
+                .join('');
+            document.getElementById('evidence-panel').innerHTML = evidenceHtml || '<div class="badge">Пока нет улик...</div>';
+
+            // Characters
+            const chars = ['👩‍🎬 Елена (режиссёр)', '👨‍💼 Олег Фокин', '🤖 Пикси', '👨‍💻 Максим'];
+            document.getElementById('character-panel').innerHTML = chars.map(c => `<div class="badge">${c}</div>`).join('');
+
+            // Cameras mentioned
+            if (scene.camerasMentioned) {
+                const cams = scene.camerasMentioned
+                    .map(id => CAMERAS.find(c => c.id === id))
+                    .filter(c => c)
+                    .map(c => `<div class="badge">${c.name}</div>`)
+                    .join('');
+                document.getElementById('camera-panel').innerHTML = cams;
+            }
+        }
+
+        // ========== DATABASE SECTION ==========
+        function renderCameraDatabase() {
+            let filtered = CAMERAS;
+            
+            if (currentFilter !== 'all') {
+                filtered = CAMERAS.filter(c => c.typeTag === currentFilter);
+            }
+
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(searchTerm) || 
+                    c.maker.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            let html = '';
+            filtered.forEach(camera => {
+                const displayContent = camera.image ? 
+                    `<img src="${camera.image}" style="width:100%; height:100%; object-fit: cover; object-position: center;">` : 
+                    `<div style="font-size: 80px; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${camera.emoji}</div>`;
+                html += `
+                    <div class="camera-card" onclick="openCameraModal('${camera.id}')">
+                        <div class="camera-image" style="position: relative; background: linear-gradient(135deg, var(--panel) 0%, var(--stroke) 100%); display: flex; align-items: center; justify-content: center;">
+                            ${displayContent}
+                        </div>
+                        <div class="camera-info" style="position: relative;">
+                            <button class="upload-btn" onclick="triggerImageUpload('${camera.id}'); event.stopPropagation();" style="position: absolute; top: 0; right: 0; z-index: 10; background: var(--accent); color: var(--bg); border: none; padding: 0.5rem; border-radius: 0; font-size: 12px; cursor: pointer;">📤</button>
+                            <div class="camera-name">${camera.name}</div>
+                            <div class="camera-maker">${camera.maker} • ${camera.year}</div>
+                            <div class="camera-tags">
+                                <span class="camera-tag">${camera.typeTag}</span>
+                            </div>
+                            <div class="camera-specs">
+                                <strong>Сенсор:</strong> ${camera.sensor}<br>
+                                <strong>Кодек:</strong> ${camera.codec}
+                            </div>
+                            <button class="btn-secondary btn-small">Подробнее →</button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('camera-grid').innerHTML = html;
+            
+            // Hidden file input for upload
+            if (!document.getElementById('image-upload')) {
+                const input = document.createElement('input');
+                input.id = 'image-upload';
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.style.display = 'none';
+                input.addEventListener('change', handleImageUpload);
+                document.body.appendChild(input);
+            }
+        }
+
+        function triggerImageUpload(cameraId) {
+            currentUploadCamera = cameraId;
+            document.getElementById('image-upload').click();
+        }
+
+        let currentUploadCamera = null;
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const camera = CAMERAS.find(c => c.id === currentUploadCamera);
+                if (camera) {
+                    camera.image = event.target.result;
+                    // Сохраняем в localStorage
+                    localStorage.setItem(`camera_image_${currentUploadCamera}`, event.target.result);
+                    renderCameraDatabase();
+                    console.log(`Фото ${camera.name} загружено и сохранено!`);
+                }
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        // Загружаем сохранённые фото при инициализации
+        function loadSavedImages() {
+            CAMERAS.forEach(camera => {
+                const saved = localStorage.getItem(`camera_image_${camera.id}`);
+                if (saved) {
+                    camera.image = saved;
+                }
+            });
+        }
+
+        function openCameraModal(cameraId) {
+            const camera = CAMERAS.find(c => c.id === cameraId);
+            if (!camera) return;
+
+            const imageContent = camera.image ?
+                `<img src="${camera.image}" style="width:100%; height:100%; object-fit: cover; object-position: center;">` :
+                `<div style="font-size: 120px; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">${camera.emoji}</div>`;
+
+            let html = `
+                <h2 class="modal-title">${camera.name}</h2>
+                <div style="position: relative;">
+                    <div class="modal-image" style="position: relative; background: linear-gradient(135deg, var(--card) 0%, var(--stroke) 100%); display: flex; align-items: center; justify-content: center;">
+                        ${imageContent}
+                    </div>
+                    <button class="upload-btn" onclick="triggerImageUpload('${camera.id}'); event.stopPropagation();" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: var(--accent); color: var(--bg); border: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">📤 Загрузить фото</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>"${camera.signature}"</strong></p>
+                    <p>${camera.story}</p>
+                </div>
+                <div class="modal-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Производитель</span>
+                        <span class="spec-value">${camera.maker}</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Год выпуска</span>
+                        <span class="spec-value">${camera.year}</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Разрешение</span>
+                        <span class="spec-value">${camera.resolution}</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Сенсор</span>
+                        <span class="spec-value">${camera.sensor}</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Кодек</span>
+                        <span class="spec-value">${camera.codec}</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Тип</span>
+                        <span class="spec-value">${camera.typeTag}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function filterCameras() {
+            renderCameraDatabase();
+        }
+
+        function toggleFilter(btn, filter) {
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = filter;
+            renderCameraDatabase();
+        }
+
+        // ========== MINIGAME ==========
+        function updatePreview(slot) {
+            const select = document.getElementById(`camera-${slot}`);
+            const preview = document.getElementById(`preview-${slot}`);
+            const cameraId = select.value;
+
+            selectedCameras[slot] = cameraId;
+
+            const quotes = [
+                '"Снимайте так, будто это ваш последний кадр"',
+                '"Камера видит больше, чем глаза"',
+                '"Настоящий фильм начинается с выбора камеры"',
+                '"Каждый кадр рассказывает историю"',
+                '"Идеальная камера — та, которая в твоих руках"'
+            ];
+
+            if (cameraId) {
+                const camera = CAMERAS.find(c => c.id === cameraId);
+                
+                const cameraEmojis = {
+                    'trv900': '📹',
+                    'dvx100': '🎬',
+                    'gopro': '📱'
+                };
+                
+                const cameraColors = {
+                    'trv900': 'linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 142, 83, 0.2) 100%)',
+                    'dvx100': 'linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%)',
+                    'gopro': 'linear-gradient(135deg, rgba(67, 233, 123, 0.2) 0%, rgba(56, 249, 215, 0.2) 100%)'
+                };
+
+                preview.innerHTML = `
+                    <div style="background: ${cameraColors[cameraId] || 'rgba(245, 158, 87, 0.1)'}; border-radius: 12px; padding: 0.75rem; border: 2px solid var(--accent); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <div style="font-size: 36px;">${cameraEmojis[cameraId] || '📹'}</div>
+                        <div style="font-size: 12px; font-weight: 700; color: var(--accent); text-align: center;">${camera.name.split(' ')[0]}</div>
+                    </div>
+                `;
+            } else {
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                preview.innerHTML = `
+                    <div style="background: linear-gradient(135deg, rgba(245, 158, 87, 0.05) 0%, rgba(245, 158, 87, 0.02) 100%); border-radius: 12px; padding: 1rem; border: 1px dashed var(--accent); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; min-height: 100px;">
+                        <div style="font-size: 32px;">🎬</div>
+                        <div style="font-size: 11px; font-style: italic; color: var(--muted); text-align: center; line-height: 1.4;">${randomQuote}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function generateCertificate() {
+            const slot1 = selectedCameras[1] || 'empty';
+            const slot2 = selectedCameras[2] || 'empty';
+            const slot3 = selectedCameras[3] || 'empty';
+
+            const getMotivationalQuote = () => {
+                const quotes = [
+                    '"Камера — это не просто инструмент. Это глаз, через который мир смотрит на себя" — Стэнли Кубрик',
+                    '"Если твои фотографии недостаточно хороши, значит ты недостаточно близко" — Роберт Капа',
+                    '"Я не снимаю реальность, я снимаю то, что вижу" — Дэвид Линч',
+                    '"Камера — это карандаш, которым я пишу" — Мартин Скорсезе',
+                    '"Снимать — значит видеть невидимое" — Ингмар Бергман'
+                ];
+                return quotes[Math.floor(Math.random() * quotes.length)];
+            };
+
+            const getCameraDisplay = (id, sceneType) => {
+                if (!id || id === 'empty') {
+                    return `
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, rgba(245, 158, 87, 0.2) 0%, rgba(245, 158, 87, 0.1) 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px dashed #F59E57;">
+                                🎬
+                            </div>
+                            <div style="flex: 1; text-align: left;">
+                                <div style="color: #F59E57; font-size: 12px; font-style: italic; line-height: 1.4;">
+                                    ${getMotivationalQuote()}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const cam = CAMERAS.find(c => c.id === id);
+                if (!cam) return '<div style="color: #A8A29E;">Камера не найдена</div>';
+
+                // Визуальные стили для каждой камеры
+                const cameraStyles = {
+                    'trv900': {
+                        emoji: '📹',
+                        gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                        icon: '🎞️',
+                        label: 'Винтаж'
+                    },
+                    'dvx100': {
+                        emoji: '🎬',
+                        gradient: 'linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%)',
+                        icon: '🎥',
+                        label: 'Кино'
+                    },
+                    'gopro': {
+                        emoji: '📱',
+                        gradient: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)',
+                        icon: '⚡',
+                        label: 'Экшн'
+                    }
+                };
+
+                const style = cameraStyles[id] || { 
+                    emoji: '📹', 
+                    gradient: 'linear-gradient(135deg, #F59E57 0%, #E8945A 100%)',
+                    icon: '🎬',
+                    label: 'Камера'
+                };
+
+                return `
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 50px; height: 50px; background: ${style.gradient}; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                            ${style.emoji}
+                        </div>
+                        <div style="flex: 1; text-align: left;">
+                            <div style="color: #ECEAE7; font-size: 14px; font-weight: 700;">${cam.name}</div>
+                            <div style="color: #A8A29E; font-size: 11px;">${style.icon} ${style.label}</div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            // Подсчитываем улики
+            const totalClues = unlockedEvidences.size;
+            const date = new Date().toLocaleDateString('ru-RU', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            const certificateHtml = `
+                <div style="background: linear-gradient(135deg, #1C1B1A 0%, #2A2927 100%); border: 3px solid #F59E57; border-radius: 20px; padding: 3rem 2rem; text-align: center; max-width: 650px; margin: 0 auto; box-shadow: 0 12px 48px rgba(245, 158, 87, 0.25);">
+                    
+                    <!-- Логотип и заголовок -->
+                    <div style="margin-bottom: 2rem;">
+                        <div style="font-size: 48px; color: #F59E57; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 2px;">AFilm</div>
+                        <div style="font-size: 14px; color: #A8A29E; text-transform: uppercase; letter-spacing: 3px;">Студия цифровой памяти</div>
+                    </div>
+
+                    <!-- Тип сертификата -->
+                    <div style="background: linear-gradient(135deg, #F59E57 0%, #E8945A 100%); padding: 1rem 2rem; border-radius: 50px; display: inline-block; margin-bottom: 2rem;">
+                        <div style="font-size: 20px; font-weight: 700; color: white; letter-spacing: 1px;">🔍 СЕРТИФИКАТ ДЕТЕКТИВА</div>
+                    </div>
+
+                    <!-- Основной текст -->
+                    <div style="margin-bottom: 2rem;">
+                        <p style="color: #ECEAE7; font-size: 16px; line-height: 1.8; margin: 0;">
+                            Настоящим удостоверяется, что
+                        </p>
+                        <div style="font-size: 28px; color: #F59E57; font-weight: 700; margin: 1rem 0; padding: 0.5rem; border-bottom: 2px solid #3A3936;">
+                            ДЕТЕКТИВ
+                        </div>
+                        <p style="color: #ECEAE7; font-size: 16px; line-height: 1.8; margin: 0;">
+                            успешно раскрыл дело об исчезновении режиссёра Олега Фокина<br>
+                            и освоил искусство чтения языка камер
+                        </p>
+                    </div>
+
+                    <!-- Статистика -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: #242321; border-radius: 12px; padding: 1rem; border: 1px solid #3A3936;">
+                            <div style="color: #A8A29E; font-size: 12px; text-transform: uppercase; margin-bottom: 0.5rem;">Улик раскрыто</div>
+                            <div style="color: #F59E57; font-size: 32px; font-weight: 700;">${totalClues}/21</div>
+                        </div>
+                        <div style="background: #242321; border-radius: 12px; padding: 1rem; border: 1px solid #3A3936;">
+                            <div style="color: #A8A29E; font-size: 12px; text-transform: uppercase; margin-bottom: 0.5rem;">Дело закрыто</div>
+                            <div style="color: #4CAF50; font-size: 32px; font-weight: 700;">✓</div>
+                        </div>
+                    </div>
+
+                    <!-- Выбранные камеры -->
+                    <div style="background: #1C1B1A; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #3A3936;">
+                        <div style="color: #F59E57; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 1px;">
+                            🎬 Выбор камер для сцен
+                        </div>
+                        
+                        <div style="display: grid; gap: 1rem;">
+                            <div style="background: #242321; padding: 1rem; border-radius: 8px;">
+                                <div style="color: #A8A29E; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Интервью с героем</div>
+                                ${getCameraDisplay(slot1, 'interview')}
+                            </div>
+                            
+                            <div style="background: #242321; padding: 1rem; border-radius: 8px;">
+                                <div style="color: #A8A29E; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Погоня по городу</div>
+                                ${getCameraDisplay(slot2, 'chase')}
+                            </div>
+                            
+                            <div style="background: #242321; padding: 1rem; border-radius: 8px;">
+                                <div style="color: #A8A29E; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Финальная встреча</div>
+                                ${getCameraDisplay(slot3, 'finale')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Подписи -->
+                    <div style="display: flex; justify-content: space-between; align-items: end; padding-top: 1.5rem; border-top: 1px solid #3A3936;">
+                        <div style="text-align: left;">
+                            <div style="color: #A8A29E; font-size: 12px; margin-bottom: 0.5rem;">Дата выдачи:</div>
+                            <div style="color: #ECEAE7; font-size: 14px; font-weight: 600;">${date}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #F59E57; font-size: 24px; margin-bottom: 0.25rem;">🤖</div>
+                            <div style="color: #A8A29E; font-size: 12px; margin-bottom: 0.25rem;">Пикси</div>
+                            <div style="color: #ECEAE7; font-size: 11px;">Эксперт по камерам</div>
+                        </div>
+                    </div>
+
+                    <!-- Финальная цитата -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, rgba(245, 158, 87, 0.1) 0%, rgba(245, 158, 87, 0.05) 100%); border-radius: 8px; border-left: 3px solid #F59E57;">
+                        <p style="color: #ECEAE7; font-size: 13px; line-height: 1.6; margin: 0; font-style: italic;">
+                            "Технологии сохраняют истории.<br>Люди создают искусство."
+                        </p>
+                    </div>
+
+                </div>
+            `;
+
+            document.getElementById('poster-output').innerHTML = certificateHtml;
+            document.getElementById('poster-container').style.display = 'block';
+            
+            // Плавная прокрутка к сертификату
+            setTimeout(() => {
+                document.getElementById('poster-container').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 100);
+        }
+
+        function saveCertificate() {
+            const certificateDiv = document.getElementById('poster-output');
+            if (!certificateDiv) return;
+
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="ru">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>AFilm — Сертификат Детектива</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 20px;
+                            background: #1C1B1A;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 100vh;
+                            font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${certificateDiv.innerHTML}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'afilm-detective-certificate.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            flattenScenes();
+            renderScene();
+        });
+
+        // Close modal on background click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+
+        // ========== TRAILER MODAL ==========
+        function openTrailerModal() {
+            document.getElementById('trailerModal').style.display = 'flex';
+        }
+
+        function closeTrailerModal() {
+            document.getElementById('trailerModal').style.display = 'none';
+            // Останавливаем видео при закрытии
+            const video = document.getElementById('trailerVideo');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        }
+
+        // Закрытие при клике на фон
+        document.addEventListener('DOMContentLoaded', () => {
+            const trailerModal = document.getElementById('trailerModal');
+            if (trailerModal) {
+                trailerModal.addEventListener('click', (e) => {
+                    if (e.target.id === 'trailerModal') closeTrailerModal();
+                });
+            }
+        });
+    </script>
+
+    <!-- Модальное окно для трейлера -->
+    <div id="trailerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="position: relative; max-width: 900px; width: 90%; background: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <!-- Кнопка закрытия -->
+            <button onclick="closeTrailerModal()" style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; transition: all 0.3s ease;">
+                ×
+            </button>
+            
+            <!-- Заголовок -->
+            <div style="padding: 2rem 2rem 1rem 2rem; background: linear-gradient(135deg, var(--panel) 0%, var(--card) 100%); border-bottom: 1px solid var(--stroke);">
+                <h2 style="color: var(--accent); margin: 0; font-size: 1.5rem;">Трейлер AFilm: Знакомство с Пикси</h2>
+                <p style="color: var(--muted); margin: 0.5rem 0 0 0; font-size: 14px;">Ваш проводник в мир любительских камер</p>
+            </div>
+            
+            <!-- Контейнер для видео -->
+            <div style="padding: 2rem;">
+                <div id="trailerVideoContainer" style="background: var(--bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                    <!-- Видео будет здесь когда добавите -->
+                    <video 
+                        id="trailerVideo"
+                        controls 
+                        style="width: 100%; display: block; border-radius: 8px;"
+                        preload="metadata"
+                    >
+                        <source src="assets/trailer.mp4" type="video/mp4">
+                        <div style="padding: 3rem; text-align: center; color: var(--muted);">
+                            <p style="font-size: 1.2rem; margin-bottom: 1rem;">🎬 Трейлер скоро появится!</p>
+                            <p>Мы готовим для вас знакомство с Пикси — вашим проводником в мире камер.</p>
+                        </div>
+                    </video>
+                </div>
+                
+                <!-- Информация о трейлере -->
+                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--card); border-radius: 8px; border-left: 3px solid var(--accent);">
+                    <p style="color: var(--text); margin: 0; font-size: 14px;">
+                        <strong style="color: var(--accent);">Что вас ждёт в трейлере:</strong><br>
+                        • Знакомство с Пикси — дружелюбным экспертом по камерам<br>
+                        • Погружение в атмосферу детективного расследования<br>
+                        • Первый взгляд на уникальный визуальный стиль игры<br>
+                        • История о том, как камеры рассказывают истории
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
